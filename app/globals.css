@@ -1,0 +1,124 @@
+@import "tailwindcss";
+
+@theme inline {
+  /* Paleta da marca — preto profundo, off-white e dourado discreto */
+  --color-ink: #0e0e10;
+  --color-ink-soft: #17171a;
+  --color-ink-line: #2a2a2e;
+  --color-cream: #f7f4ee;
+  --color-cream-soft: #efeae1;
+  --color-gold: #b6924f;
+  --color-gold-soft: #d8c393;
+  --color-gold-deep: #8f7038;
+
+  --font-display: var(--font-playfair);
+  --font-sans: var(--font-inter);
+
+  --animate-fade-up: fade-up 0.7s ease forwards;
+  --animate-fade-in: fade-in 0.6s ease forwards;
+
+  @keyframes fade-up {
+    from {
+      opacity: 0;
+      transform: translateY(16px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  @keyframes fade-in {
+    from {
+      opacity: 0;
+    }
+    to {
+      opacity: 1;
+    }
+  }
+}
+
+:root {
+  --background: var(--color-cream);
+  --foreground: var(--color-ink);
+}
+
+* {
+  border-color: var(--color-ink-line);
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  background: var(--background);
+  color: var(--foreground);
+  font-family: var(--font-sans), system-ui, sans-serif;
+}
+
+::selection {
+  background: var(--color-gold-soft);
+  color: var(--color-ink);
+}
+
+/* Foco visível e acessível em toda a aplicação */
+:focus-visible {
+  outline: 2px solid var(--color-gold);
+  outline-offset: 2px;
+}
+
+/* Scrollbar discreta */
+::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+::-webkit-scrollbar-track {
+  background: var(--color-cream);
+}
+::-webkit-scrollbar-thumb {
+  background: var(--color-ink-line);
+  border-radius: 999px;
+}
+
+.container-page {
+  width: 100%;
+  max-width: 84rem;
+  margin-inline: auto;
+  padding-inline: 1.25rem;
+}
+
+@media (min-width: 768px) {
+  .container-page {
+    padding-inline: 2rem;
+  }
+}
+
+.text-balance {
+  text-wrap: balance;
+}
+
+.animate-in {
+  opacity: 0;
+  animation: var(--animate-fade-up);
+}
+
+.animate-in-delay-1 {
+  animation-delay: 0.1s;
+}
+.animate-in-delay-2 {
+  animation-delay: 0.2s;
+}
+.animate-in-delay-3 {
+  animation-delay: 0.3s;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+  .animate-in {
+    opacity: 1;
+    animation: none;
+  }
+}
