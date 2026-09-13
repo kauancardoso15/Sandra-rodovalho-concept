@@ -1,5 +1,4 @@
 import { LinkButton, AnchorButton } from "@/components/ui/Button";
-import { Container } from "@/components/ui/Container";
 import { WhatsAppIcon } from "@/components/product/WhatsAppBuyButton";
 import { buildWhatsAppUrl } from "@/lib/utils";
 import { ProductImage } from "@/components/ui/ProductImage";

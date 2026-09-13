@@ -21,14 +21,22 @@ export function ResetPasswordForm() {
   const [submitting, setSubmitting] = useState(false);
 
   useEffect(() => {
-    if (!isSupabaseConfigured()) {
-      setStatus("not-configured");
-      return;
+    let cancelled = false;
+
+    async function checkRecoverySession() {
+      if (!isSupabaseConfigured()) {
+        if (!cancelled) setStatus("not-configured");
+        return;
+      }
+      const supabase = createClient();
+      const { data } = await supabase.auth.getSession();
+      if (!cancelled) setStatus(data.session ? "ready" : "invalid");
     }
-    const supabase = createClient();
-    supabase.auth.getSession().then(({ data }) => {
-      setStatus(data.session ? "ready" : "invalid");
-    });
+
+    checkRecoverySession();
+    return () => {
+      cancelled = true;
+    };
   }, []);
 
   async function handleSubmit(e: React.FormEvent) {

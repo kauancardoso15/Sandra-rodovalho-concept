@@ -16,16 +16,20 @@ export function Header({ settings }: { settings: StoreSettings }) {
   const [open, setOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
 
+  // Fecha o menu mobile ao trocar de página (ajuste de estado durante a
+  // renderização, em vez de um efeito, conforme recomendado pelo React).
+  const [lastPathname, setLastPathname] = useState(pathname);
+  if (pathname !== lastPathname) {
+    setLastPathname(pathname);
+    setOpen(false);
+  }
+
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 12);
     onScroll();
     window.addEventListener("scroll", onScroll, { passive: true });
     return () => window.removeEventListener("scroll", onScroll);
   }, []);
-
-  useEffect(() => {
-    setOpen(false);
-  }, [pathname]);
 
   const whatsappUrl = buildWhatsAppUrl(settings.whatsapp_number, WHATSAPP_DEFAULT_MESSAGE);
 
