@@ -51,6 +51,16 @@ export interface StoreSettings {
   updated_at: string;
 }
 
+export interface InstagramHighlight {
+  id: string;
+  image_url: string;
+  caption: string | null;
+  link: string | null;
+  sort_order: number;
+  is_active: boolean;
+  created_at: string;
+}
+
 export interface ProductFilters {
   search?: string;
   categorySlug?: string;
@@ -67,4 +77,5 @@ export interface DashboardStats {
   newProducts: number;
   totalCategories: number;
   activeCategories: number;
+  instagramHighlights: number;
 }

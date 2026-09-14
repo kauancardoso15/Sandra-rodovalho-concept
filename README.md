@@ -37,6 +37,8 @@ administrativo próprio, e direciona toda venda para o WhatsApp da loja.
 | `/admin/produtos/novo` / `/admin/produtos/[id]` | Cadastrar/editar produto |
 | `/admin/categorias` | Listagem e gestão de categorias |
 | `/admin/categorias/novo` / `/admin/categorias/[id]` | Cadastrar/editar categoria |
+| `/admin/instagram` | Gerencia as imagens da seção "Visto no Instagram" da Home |
+| `/admin/instagram/novo` / `/admin/instagram/[id]` | Adicionar/editar imagem do Instagram |
 | `/admin/configuracoes` | Nome da loja, logo, WhatsApp, Instagram, textos e imagens da Home/Sobre |
 
 ### Código
@@ -65,7 +67,8 @@ Supabase (Auth + Postgres + Storage) · `@supabase/ssr`.
 - Painel administrativo com autenticação real via Supabase Auth, proteção de rota no servidor (`proxy.ts` + verificação no layout do painel — nunca depende só de esconder o link).
 - Logout automático por **inatividade** (não por tempo de página aberta) após `ADMIN_INACTIVITY_TIMEOUT_MS` (15 min, ajustável em `lib/config.ts`), com mensagem "Sua sessão foi encerrada por segurança."
 - Recuperação de senha real (Supabase Auth) — link por e-mail → `/admin/redefinir-senha`.
-- CRUD completo de produtos e categorias, com upload de imagem para o Supabase Storage (ou colar uma URL).
+- CRUD completo de produtos, categorias e imagens do Instagram, com upload de imagem para o Supabase Storage (ou colar uma URL).
+- **Todas** as fotos do site são editáveis pelo painel: produtos, categorias, logo, hero da Home, imagem do Sobre e as imagens da seção "Visto no Instagram" — nenhuma foto fica presa no código.
 - Estado elegante "Imagem não cadastrada" sempre que não há foto — nunca um ícone de imagem quebrada.
 - SEO: `title`/`description`/Open Graph por página, `sitemap.xml`, `robots.txt`, URLs amigáveis.
 
@@ -87,6 +90,11 @@ de produtos/categorias/configurações dependem de um projeto Supabase:
 Isso está **preparado e documentado**, não implementado de forma falsa: sem
 o Supabase configurado, a tela de login explica isso claramente em vez de
 fingir autenticar.
+
+> Já conectou o Supabase antes e o `schema.sql` mudou depois (ex.: bucket
+> `instagram-images` adicionado)? Basta rodar o arquivo de novo no SQL
+> Editor — é idempotente, então só adiciona o que falta, sem apagar nada
+> que já existe.
 
 ## Como acessar o painel administrativo
 - URL: `/admin` (redireciona para `/admin/login` se não houver sessão).

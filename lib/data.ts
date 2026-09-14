@@ -4,7 +4,14 @@ import { createClient } from "./supabase/server";
 import { isSupabaseConfigured } from "./supabase/env";
 import { DEFAULT_SETTINGS } from "./config";
 import { DEMO_CATEGORIES, DEMO_PRODUCTS, demoCategoryFor } from "./demo-data";
-import type { Category, DashboardStats, Product, ProductFilters, StoreSettings } from "./types";
+import type {
+  Category,
+  DashboardStats,
+  InstagramHighlight,
+  Product,
+  ProductFilters,
+  StoreSettings,
+} from "./types";
 
 /**
  * Camada única de acesso a dados do catálogo.
@@ -176,6 +183,49 @@ export const getOffers = cache(async (limit?: number): Promise<Product[]> => {
 });
 
 // ---------------------------------------------------------------------------
+// Instagram — imagens selecionadas exibidas na seção "Visto no Instagram"
+// ---------------------------------------------------------------------------
+// Sem Supabase configurado, retorna lista vazia (nunca inventamos posts reais
+// do Instagram): a seção pública cai no estado "em breve" ilustrado com a
+// moldura da marca em vez de fotos falsas.
+
+export const getInstagramHighlights = cache(
+  async (options: { activeOnly?: boolean } = {}): Promise<InstagramHighlight[]> => {
+    const activeOnly = options.activeOnly ?? true;
+    const supabase = await getSupabase();
+    if (!supabase) return [];
+
+    let query = supabase
+      .from("instagram_highlights")
+      .select("*")
+      .order("sort_order", { ascending: true });
+    if (activeOnly) query = query.eq("is_active", true);
+
+    const { data, error } = await query;
+    if (error || !data) return [];
+    return data as InstagramHighlight[];
+  }
+);
+
+export const getAllInstagramHighlightsAdmin = cache(async (): Promise<InstagramHighlight[]> => {
+  return getInstagramHighlights({ activeOnly: false });
+});
+
+export const getInstagramHighlightByIdAdmin = cache(
+  async (id: string): Promise<InstagramHighlight | null> => {
+    const supabase = await getSupabase();
+    if (!supabase) return null;
+    const { data, error } = await supabase
+      .from("instagram_highlights")
+      .select("*")
+      .eq("id", id)
+      .maybeSingle();
+    if (error || !data) return null;
+    return data as InstagramHighlight;
+  }
+);
+
+// ---------------------------------------------------------------------------
 // Funções administrativas (retornam também itens inativos)
 // ---------------------------------------------------------------------------
 
@@ -219,9 +269,10 @@ export const getCategoryByIdAdmin = cache(async (id: string): Promise<Category |
 });
 
 export const getDashboardStats = cache(async (): Promise<DashboardStats> => {
-  const [products, categories] = await Promise.all([
+  const [products, categories, instagramHighlights] = await Promise.all([
     getAllProductsAdmin(),
     getAllCategoriesAdmin(),
+    getAllInstagramHighlightsAdmin(),
   ]);
 
   return {
@@ -230,6 +281,7 @@ export const getDashboardStats = cache(async (): Promise<DashboardStats> => {
     onSaleProducts: products.filter((p) => p.is_on_sale && p.sale_price).length,
     newProducts: products.filter((p) => p.is_new).length,
     totalCategories: categories.length,
+    instagramHighlights: instagramHighlights.length,
     activeCategories: categories.filter((c) => c.is_active).length,
   };
 });

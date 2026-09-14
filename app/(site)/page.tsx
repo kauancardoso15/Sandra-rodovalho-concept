@@ -6,7 +6,7 @@ import { JourneySection } from "@/components/home/JourneySection";
 import { OffersSection } from "@/components/home/OffersSection";
 import { InstagramSection } from "@/components/home/InstagramSection";
 import { AboutSection } from "@/components/home/AboutSection";
-import { getCategories, getNewArrivals, getOffers, getSettings } from "@/lib/data";
+import { getCategories, getInstagramHighlights, getNewArrivals, getOffers, getSettings } from "@/lib/data";
 
 export const metadata: Metadata = {
   title: "Início",
@@ -15,11 +15,12 @@ export const metadata: Metadata = {
 };
 
 export default async function HomePage() {
-  const [settings, newArrivals, offers, categories] = await Promise.all([
+  const [settings, newArrivals, offers, categories, instagramHighlights] = await Promise.all([
     getSettings(),
     getNewArrivals(8),
     getOffers(4),
     getCategories(),
+    getInstagramHighlights(),
   ]);
 
   return (
@@ -29,7 +30,7 @@ export default async function HomePage() {
       <NewArrivalsSection products={newArrivals} />
       <CategoriesSection categories={categories} />
       <OffersSection products={offers} />
-      <InstagramSection settings={settings} />
+      <InstagramSection settings={settings} highlights={instagramHighlights} />
       <AboutSection settings={settings} />
     </>
   );

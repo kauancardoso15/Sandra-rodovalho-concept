@@ -9,7 +9,7 @@ import { cn } from "@/lib/utils";
 interface ImageUploadFieldProps {
   name: string;
   label: string;
-  bucket: "product-images" | "category-images" | "site-images";
+  bucket: "product-images" | "category-images" | "site-images" | "instagram-images";
   defaultValue?: string | null;
   helpText?: string;
 }

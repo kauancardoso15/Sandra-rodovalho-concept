@@ -15,6 +15,7 @@ const NAV_ITEMS: Array<{
   { href: "/admin", label: "Dashboard", icon: DashboardIcon, exact: true },
   { href: "/admin/produtos", label: "Produtos", icon: ProductsIcon },
   { href: "/admin/categorias", label: "Categorias", icon: CategoriesIcon },
+  { href: "/admin/instagram", label: "Instagram", icon: InstagramIcon },
   { href: "/admin/configuracoes", label: "Configurações", icon: SettingsIcon },
 ];
 
@@ -120,6 +121,15 @@ function CategoriesIcon({ className }: { className?: string }) {
       <rect x="13" y="3" width="8" height="8" />
       <rect x="3" y="13" width="8" height="8" />
       <rect x="13" y="13" width="8" height="8" />
+    </svg>
+  );
+}
+function InstagramIcon({ className }: { className?: string }) {
+  return (
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" className={className} aria-hidden="true">
+      <rect x="3" y="3" width="18" height="18" rx="5" />
+      <circle cx="12" cy="12" r="4" />
+      <circle cx="17.2" cy="6.8" r="0.6" fill="currentColor" stroke="none" />
     </svg>
   );
 }

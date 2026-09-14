@@ -21,16 +21,17 @@ export default async function AdminDashboardPage() {
         </p>
       </div>
 
-      <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-6">
+      <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-7">
         <StatCard label="Produtos cadastrados" value={stats.totalProducts} />
         <StatCard label="Produtos ativos" value={stats.activeProducts} />
         <StatCard label="Em oferta" value={stats.onSaleProducts} />
         <StatCard label="Novidades" value={stats.newProducts} />
         <StatCard label="Categorias" value={stats.totalCategories} />
         <StatCard label="Categorias ativas" value={stats.activeCategories} />
+        <StatCard label="Fotos do Instagram" value={stats.instagramHighlights} />
       </div>
 
-      <div className="grid gap-4 sm:grid-cols-2">
+      <div className="grid gap-4 sm:grid-cols-3">
         <Link
           href="/admin/produtos/novo"
           className="border border-ink/10 bg-white px-6 py-6 transition-colors hover:border-gold"
@@ -44,6 +45,13 @@ export default async function AdminDashboardPage() {
         >
           <p className="font-display text-lg text-ink">+ Adicionar categoria</p>
           <p className="mt-1 text-sm text-ink/50">Organize seu catálogo por coleções.</p>
+        </Link>
+        <Link
+          href="/admin/instagram/novo"
+          className="border border-ink/10 bg-white px-6 py-6 transition-colors hover:border-gold"
+        >
+          <p className="font-display text-lg text-ink">+ Adicionar foto do Instagram</p>
+          <p className="mt-1 text-sm text-ink/50">Escolha as imagens da seção &ldquo;Visto no Instagram&rdquo;.</p>
         </Link>
       </div>
     </div>

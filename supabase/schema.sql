@@ -245,38 +245,39 @@ create policy "instagram_highlights_admin_all"
   with check (true);
 
 -- =============================================================================
--- Storage (fotos de produtos, categorias e imagens do site)
+-- Storage (fotos de produtos, categorias, imagens do site e do Instagram)
 -- =============================================================================
 insert into storage.buckets (id, name, public)
 values
   ('product-images', 'product-images', true),
   ('category-images', 'category-images', true),
-  ('site-images', 'site-images', true)
+  ('site-images', 'site-images', true),
+  ('instagram-images', 'instagram-images', true)
 on conflict (id) do nothing;
 
 drop policy if exists "storage_public_read_store_images" on storage.objects;
 create policy "storage_public_read_store_images"
   on storage.objects for select
   to anon, authenticated
-  using (bucket_id in ('product-images', 'category-images', 'site-images'));
+  using (bucket_id in ('product-images', 'category-images', 'site-images', 'instagram-images'));
 
 drop policy if exists "storage_admin_upload_store_images" on storage.objects;
 create policy "storage_admin_upload_store_images"
   on storage.objects for insert
   to authenticated
-  with check (bucket_id in ('product-images', 'category-images', 'site-images'));
+  with check (bucket_id in ('product-images', 'category-images', 'site-images', 'instagram-images'));
 
 drop policy if exists "storage_admin_update_store_images" on storage.objects;
 create policy "storage_admin_update_store_images"
   on storage.objects for update
   to authenticated
-  using (bucket_id in ('product-images', 'category-images', 'site-images'));
+  using (bucket_id in ('product-images', 'category-images', 'site-images', 'instagram-images'));
 
 drop policy if exists "storage_admin_delete_store_images" on storage.objects;
 create policy "storage_admin_delete_store_images"
   on storage.objects for delete
   to authenticated
-  using (bucket_id in ('product-images', 'category-images', 'site-images'));
+  using (bucket_id in ('product-images', 'category-images', 'site-images', 'instagram-images'));
 
 -- =============================================================================
 -- Seed de configuração inicial (não sobrescreve se já existir)
