@@ -1,4 +1,5 @@
 import "server-only";
+import { cache } from "react";
 import { createClient } from "./supabase/server";
 import { isSupabaseConfigured } from "./supabase/env";
 import { DEFAULT_SETTINGS } from "./config";
@@ -12,16 +13,23 @@ import type { Category, DashboardStats, Product, ProductFilters, StoreSettings }
  * dados vêm do banco real. Caso contrário — ou se a consulta falhar por
  * qualquer motivo — o site cai graciosamente para o conteúdo DEMO, para
  * que a vitrine nunca fique quebrada durante a apresentação.
+ *
+ * Todas as funções exportadas são memoizadas por requisição com `cache()`
+ * do React: várias partes da árvore (ex.: o layout e a própria página)
+ * costumam pedir os mesmos dados (settings, categorias) — sem essa
+ * memoização, cada uma dispararia sua própria chamada ao Supabase,
+ * multiplicando a latência à toa. Com `cache()`, a mesma chamada dentro de
+ * uma única requisição reaproveita o resultado em vez de ir à rede de novo.
  */
 
-async function safeSupabase() {
+const getSupabase = cache(async () => {
   if (!isSupabaseConfigured()) return null;
   try {
     return await createClient();
   } catch {
     return null;
   }
-}
+});
 
 function applyFilters(products: Product[], filters: ProductFilters = {}): Product[] {
   let result = products.filter((p) => p.is_active);
@@ -58,18 +66,18 @@ function withDemoCategory(product: Product): Product {
   return { ...product, category: demoCategoryFor(product) };
 }
 
-export async function getSettings(): Promise<StoreSettings> {
-  const supabase = await safeSupabase();
+export const getSettings = cache(async (): Promise<StoreSettings> => {
+  const supabase = await getSupabase();
   if (!supabase) return DEFAULT_SETTINGS;
 
   const { data, error } = await supabase.from("settings").select("*").eq("id", "default").maybeSingle();
   if (error || !data) return DEFAULT_SETTINGS;
   return data as StoreSettings;
-}
+});
 
-export async function getCategories(options: { activeOnly?: boolean } = {}): Promise<Category[]> {
+export const getCategories = cache(async (options: { activeOnly?: boolean } = {}): Promise<Category[]> => {
   const activeOnly = options.activeOnly ?? true;
-  const supabase = await safeSupabase();
+  const supabase = await getSupabase();
 
   if (!supabase) {
     const list = activeOnly ? DEMO_CATEGORIES.filter((c) => c.is_active) : DEMO_CATEGORIES;
@@ -84,10 +92,10 @@ export async function getCategories(options: { activeOnly?: boolean } = {}): Pro
     return [...list].sort((a, b) => a.sort_order - b.sort_order);
   }
   return data as Category[];
-}
+});
 
-export async function getCategoryBySlug(slug: string): Promise<Category | null> {
-  const supabase = await safeSupabase();
+export const getCategoryBySlug = cache(async (slug: string): Promise<Category | null> => {
+  const supabase = await getSupabase();
   if (!supabase) {
     return DEMO_CATEGORIES.find((c) => c.slug === slug && c.is_active) ?? null;
   }
@@ -99,10 +107,10 @@ export async function getCategoryBySlug(slug: string): Promise<Category | null> 
     .maybeSingle();
   if (error || !data) return null;
   return data as Category;
-}
+});
 
-export async function getProducts(filters: ProductFilters = {}): Promise<Product[]> {
-  const supabase = await safeSupabase();
+export const getProducts = cache(async (filters: ProductFilters = {}): Promise<Product[]> => {
+  const supabase = await getSupabase();
 
   if (!supabase) {
     return applyFilters(DEMO_PRODUCTS.map(withDemoCategory), filters);
@@ -139,10 +147,10 @@ export async function getProducts(filters: ProductFilters = {}): Promise<Product
     return applyFilters(DEMO_PRODUCTS.map(withDemoCategory), filters);
   }
   return data as Product[];
-}
+});
 
-export async function getProductBySlug(slug: string): Promise<Product | null> {
-  const supabase = await safeSupabase();
+export const getProductBySlug = cache(async (slug: string): Promise<Product | null> => {
+  const supabase = await getSupabase();
   if (!supabase) {
     const found = DEMO_PRODUCTS.find((p) => p.slug === slug && p.is_active);
     return found ? withDemoCategory(found) : null;
@@ -155,24 +163,24 @@ export async function getProductBySlug(slug: string): Promise<Product | null> {
     .maybeSingle();
   if (error || !data) return null;
   return data as Product;
-}
+});
 
-export async function getNewArrivals(limit = 8): Promise<Product[]> {
+export const getNewArrivals = cache(async (limit = 8): Promise<Product[]> => {
   const products = await getProducts({ onlyNew: true });
   return products.slice(0, limit);
-}
+});
 
-export async function getOffers(limit?: number): Promise<Product[]> {
+export const getOffers = cache(async (limit?: number): Promise<Product[]> => {
   const products = await getProducts({ onlyOnSale: true });
   return typeof limit === "number" ? products.slice(0, limit) : products;
-}
+});
 
 // ---------------------------------------------------------------------------
 // Funções administrativas (retornam também itens inativos)
 // ---------------------------------------------------------------------------
 
-export async function getAllProductsAdmin(): Promise<Product[]> {
-  const supabase = await safeSupabase();
+export const getAllProductsAdmin = cache(async (): Promise<Product[]> => {
+  const supabase = await getSupabase();
   if (!supabase) return DEMO_PRODUCTS.map(withDemoCategory);
 
   const { data, error } = await supabase
@@ -181,10 +189,10 @@ export async function getAllProductsAdmin(): Promise<Product[]> {
     .order("created_at", { ascending: false });
   if (error || !data) return DEMO_PRODUCTS.map(withDemoCategory);
   return data as Product[];
-}
+});
 
-export async function getProductByIdAdmin(id: string): Promise<Product | null> {
-  const supabase = await safeSupabase();
+export const getProductByIdAdmin = cache(async (id: string): Promise<Product | null> => {
+  const supabase = await getSupabase();
   if (!supabase) {
     const found = DEMO_PRODUCTS.find((p) => p.id === id);
     return found ? withDemoCategory(found) : null;
@@ -196,21 +204,21 @@ export async function getProductByIdAdmin(id: string): Promise<Product | null> {
     .maybeSingle();
   if (error || !data) return null;
   return data as Product;
-}
+});
 
-export async function getAllCategoriesAdmin(): Promise<Category[]> {
+export const getAllCategoriesAdmin = cache(async (): Promise<Category[]> => {
   return getCategories({ activeOnly: false });
-}
+});
 
-export async function getCategoryByIdAdmin(id: string): Promise<Category | null> {
-  const supabase = await safeSupabase();
+export const getCategoryByIdAdmin = cache(async (id: string): Promise<Category | null> => {
+  const supabase = await getSupabase();
   if (!supabase) return DEMO_CATEGORIES.find((c) => c.id === id) ?? null;
   const { data, error } = await supabase.from("categories").select("*").eq("id", id).maybeSingle();
   if (error || !data) return null;
   return data as Category;
-}
+});
 
-export async function getDashboardStats(): Promise<DashboardStats> {
+export const getDashboardStats = cache(async (): Promise<DashboardStats> => {
   const [products, categories] = await Promise.all([
     getAllProductsAdmin(),
     getAllCategoriesAdmin(),
@@ -224,4 +232,4 @@ export async function getDashboardStats(): Promise<DashboardStats> {
     totalCategories: categories.length,
     activeCategories: categories.filter((c) => c.is_active).length,
   };
-}
+});
