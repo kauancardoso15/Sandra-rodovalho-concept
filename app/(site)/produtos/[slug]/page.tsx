@@ -66,7 +66,7 @@ export default async function ProductPage({ params }: ProductPageProps) {
         </nav>
 
         <div className="grid gap-10 md:grid-cols-2 md:gap-16">
-          <div className="relative aspect-[3/4] w-full overflow-hidden bg-ink">
+          <div className="photo-frame relative aspect-[3/4] w-full overflow-hidden bg-ink">
             <ProductImage src={product.image_url} alt={product.name} label={product.name} priority />
             <div className="absolute left-4 top-4 flex flex-col gap-2">
               {product.is_new && <Badge tone="new">Novidade</Badge>}

@@ -15,7 +15,7 @@ export default async function SobrePage() {
   return (
     <div className="py-16 md:py-24">
       <Container className="grid items-center gap-12 md:grid-cols-2 md:gap-20">
-        <div className="relative aspect-[4/5] w-full overflow-hidden">
+        <div className="photo-frame relative aspect-[4/5] w-full overflow-hidden bg-ink">
           <ProductImage
             src={settings.about_image_url}
             alt={`Sobre a ${settings.store_name}`}

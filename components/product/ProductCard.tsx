@@ -20,7 +20,7 @@ export function ProductCard({
       className="group block"
       aria-label={`Ver detalhes de ${product.name}`}
     >
-      <div className="relative aspect-[3/4] w-full overflow-hidden bg-ink">
+      <div className="photo-frame relative aspect-[3/4] w-full overflow-hidden bg-ink">
         <div className="absolute inset-0 transition-transform duration-700 ease-out group-hover:scale-[1.04]">
           <ProductImage src={product.image_url} alt={product.name} label={product.name} />
         </div>
