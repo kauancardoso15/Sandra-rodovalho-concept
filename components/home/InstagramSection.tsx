@@ -54,6 +54,7 @@ export function InstagramSection({
                     alt={highlight.caption || settings.instagram_handle}
                     label={highlight.caption ?? "@"}
                     sizes="(max-width: 768px) 33vw, 20vw"
+                    className="object-top"
                   />
                 </div>
               </a>
