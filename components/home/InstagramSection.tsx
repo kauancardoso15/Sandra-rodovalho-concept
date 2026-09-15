@@ -38,7 +38,7 @@ export function InstagramSection({
           // Largura fixa por foto (não um grid rígido de 5 colunas): com poucas
           // fotos cadastradas, a fileira continua parecendo curada e
           // proposital, em vez de deixar um vão vazio ao lado.
-          <div className="mt-12 flex flex-wrap justify-center gap-2 sm:justify-start sm:gap-3">
+          <div className="mt-12 flex flex-wrap justify-center gap-2 sm:gap-3">
             {highlights.map((highlight) => (
               <a
                 key={highlight.id}
