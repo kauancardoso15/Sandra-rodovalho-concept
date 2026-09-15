@@ -1,3 +1,5 @@
+<!-- deploy trigger -->
+
 # Sandra Rodovalho Concept — Vitrine Digital
 
 Pré-projeto comercial de um site profissional para a loja de moda feminina
