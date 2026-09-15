@@ -114,3 +114,20 @@ fingir autenticar.
 npm install
 npm run dev
 ```
+
+## Deploy na Vercel
+
+1. Suba o código para um repositório no GitHub/GitLab/Bitbucket.
+2. Em [vercel.com](https://vercel.com) → **Add New Project** → importe o repositório. O framework (Next.js) é detectado automaticamente, nenhum ajuste de build é necessário.
+3. Em **Settings → Environment Variables**, cadastre:
+
+   | Variável | Valor |
+   |---|---|
+   | `NEXT_PUBLIC_SUPABASE_URL` | URL do seu projeto Supabase |
+   | `NEXT_PUBLIC_SUPABASE_ANON_KEY` | Chave pública (`anon`/`publishable`) do Supabase — **nunca** a `service_role` |
+   | `NEXT_PUBLIC_SITE_URL` | O domínio final do site (ex.: `https://sandrarodovalhoconcept.com.br` ou o `https://SEU-PROJETO.vercel.app` gerado pela Vercel) — usado no SEO, Open Graph e `sitemap.xml` |
+
+4. Deploy. Depois do primeiro deploy, se você definiu um domínio próprio na Vercel, atualize `NEXT_PUBLIC_SITE_URL` para esse domínio definitivo e faça um novo deploy (redeploy) para o sitemap/SEO refletirem a URL certa.
+5. Crie o usuário administrador (se ainda não existir) em **Supabase → Authentication → Users → Add user** e teste o login em `https://SEU-DOMINIO/admin/login`.
+
+Nenhuma configuração adicional de servidor é necessária — o projeto não depende de `localhost` em nenhum lugar do código (tudo lê de `NEXT_PUBLIC_SITE_URL`/variáveis de ambiente), e a proteção do `/admin` (via `proxy.ts`, a convenção de middleware do Next.js) funciona nativamente na Vercel.
